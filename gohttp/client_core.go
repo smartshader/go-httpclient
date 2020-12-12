@@ -116,7 +116,7 @@ func (c *httpClient) getRequestHeaders(requestHeaders http.Header) http.Header {
 	}
 
 	// Add common headers to the request
-	for header, value := range c.Headers {
+	for header, value := range c.headers {
 		if len(value) > 0 {
 			headers.Set(header, value[0])
 		}
