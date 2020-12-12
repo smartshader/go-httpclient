@@ -15,6 +15,7 @@ type clientBuilder struct {
 
 type ClientBuilder interface {
 	Build() Client
+
 	SetHeaders(headers http.Header) ClientBuilder
 	SetResponseTimeout(timeout time.Duration) ClientBuilder
 	SetConnectionTimeout(timeout time.Duration) ClientBuilder
@@ -28,11 +29,7 @@ func NewBuilder() ClientBuilder {
 
 func (c *clientBuilder) Build() Client {
 	return &httpClient{
-		headers:            c.headers,
-		maxIdleConnections: c.maxIdleConnections,
-		responseTimeout:    c.responseTimeout,
-		connectionTimeout:  c.connectionTimeout,
-		disableTimeouts:    c.disableTimeouts,
+		builder: c,
 	}
 }
 
