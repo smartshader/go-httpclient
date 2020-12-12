@@ -1,16 +1,33 @@
 package gohttp
 
-import "net/http"
+import (
+	"net"
+	"net/http"
+	"time"
+)
 
-type client struct {
+type httpClient struct {
+	client  *http.Client
 	Headers http.Header
 }
 
-func New() Client {
-	return &client{}
+func New() HttpClient {
+	client := http.Client{
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost:   5,
+			ResponseHeaderTimeout: 5 * time.Second,
+			DialContext: net.Dialer{
+				Timeout: 1 * time.Second,
+			}.DialContext,
+		},
+	}
+
+	return &httpClient{
+		client: &client,
+	}
 }
 
-type Client interface {
+type HttpClient interface {
 	SetHeaders(headers http.Header)
 
 	Get(url string, headers http.Header) (*http.Response, error)
@@ -20,26 +37,26 @@ type Client interface {
 	Delete(url string, headers http.Header) (*http.Response, error)
 }
 
-func (c *client) SetHeaders(headers http.Header) {
+func (c *httpClient) SetHeaders(headers http.Header) {
 	c.Headers = headers
 }
 
-func (c *client) Get(url string, headers http.Header) (*http.Response, error) {
+func (c *httpClient) Get(url string, headers http.Header) (*http.Response, error) {
 	return c.do(http.MethodGet, url, headers, nil)
 }
 
-func (c *client) Post(url string, headers http.Header, body interface{}) (*http.Response, error) {
+func (c *httpClient) Post(url string, headers http.Header, body interface{}) (*http.Response, error) {
 	return c.do(http.MethodPost, url, headers, body)
 }
 
-func (c *client) Put(url string, headers http.Header, body interface{}) (*http.Response, error) {
+func (c *httpClient) Put(url string, headers http.Header, body interface{}) (*http.Response, error) {
 	return c.do(http.MethodPut, url, headers, body)
 }
 
-func (c *client) Patch(url string, headers http.Header, body interface{}) (*http.Response, error) {
+func (c *httpClient) Patch(url string, headers http.Header, body interface{}) (*http.Response, error) {
 	return c.do(http.MethodPatch, url, headers, body)
 }
 
-func (c *client) Delete(url string, headers http.Header) (*http.Response, error) {
+func (c *httpClient) Delete(url string, headers http.Header) (*http.Response, error) {
 	return c.do(http.MethodDelete, url, headers, nil)
 }

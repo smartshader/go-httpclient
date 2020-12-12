@@ -11,7 +11,7 @@ var (
 	httpClient = getGithubClient()
 )
 
-func getGithubClient() gohttp.Client {
+func getGithubClient() gohttp.HttpClient {
 	client := gohttp.New()
 
 	commonHeaders := make(http.Header)

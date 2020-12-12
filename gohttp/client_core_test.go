@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetRequestHeaders(t *testing.T) {
-	httpClient := &client{}
+	httpClient := &httpClient{}
 	commonHeaders := make(http.Header)
 	commonHeaders.Set("Content-Type", "application/json")
 	commonHeaders.Set("User-Agent", "cool-http-client")
@@ -35,7 +35,7 @@ func TestGetRequestHeaders(t *testing.T) {
 }
 
 func TestGetRequestBody(t *testing.T) {
-	httpClient := &client{}
+	httpClient := &httpClient{}
 
 	t.Run("noBodyNilResponse", func(t *testing.T) {
 		body, err := httpClient.getRequestBody("", nil)

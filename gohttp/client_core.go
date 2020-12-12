@@ -9,9 +9,7 @@ import (
 	"strings"
 )
 
-func (c *client) do(method, url string, headers http.Header, body interface{}) (*http.Response, error) {
-	client := http.Client{}
-
+func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*http.Response, error) {
 	fullHeaders := c.getRequestHeaders(headers)
 
 	requestBody, err := c.getRequestBody(fullHeaders.Get("Content-Type"), body)
@@ -26,10 +24,10 @@ func (c *client) do(method, url string, headers http.Header, body interface{}) (
 
 	request.Header = fullHeaders
 
-	return client.Do(request)
+	return c.client.Do(request)
 }
 
-func (c *client) getRequestBody(contentType string, body interface{}) ([]byte, error) {
+func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byte, error) {
 	if body == nil {
 		return nil, nil
 	}
@@ -46,7 +44,7 @@ func (c *client) getRequestBody(contentType string, body interface{}) ([]byte, e
 	}
 }
 
-func (c *client) getRequestHeaders(requestHeaders http.Header) http.Header {
+func (c *httpClient) getRequestHeaders(requestHeaders http.Header) http.Header {
 	headers := make(http.Header)
 
 	// Add custom headers to the request
