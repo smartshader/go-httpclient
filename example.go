@@ -4,11 +4,30 @@ import (
 	"fmt"
 	"github.com/smartshader/go-httpclient/gohttp"
 	"io/ioutil"
+	"net/http"
 )
 
-func main() {
+var (
+	httpClient = getGithubClient()
+)
+
+func getGithubClient() gohttp.Client {
 	client := gohttp.New()
-	response, err := client.Get("https://api.github.com", nil)
+
+	commonHeaders := make(http.Header)
+	commonHeaders.Set("Authorization", "Bearer ABC-123")
+
+	client.SetHeaders(commonHeaders)
+
+	return client
+}
+
+func main() {
+	getUrls()
+}
+
+func getUrls() {
+	response, err := httpClient.Get("https://api.github.com", nil)
 	if err != nil {
 		panic(err)
 	}
