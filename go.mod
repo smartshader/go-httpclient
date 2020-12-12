@@ -1,3 +1,3 @@
-module "github.com/smartshader/go-httpclient"
+module github.com/smartshader/go-httpclient
 
 go 1.15
