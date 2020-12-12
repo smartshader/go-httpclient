@@ -5,6 +5,7 @@ import (
 	"github.com/smartshader/go-httpclient/gohttp"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 var (
@@ -13,6 +14,9 @@ var (
 
 func getGithubClient() gohttp.HttpClient {
 	client := gohttp.New()
+
+	client.SetResponseTimeout(4 * time.Second)
+	client.SetConnectionTimeout(2 * time.Second)
 
 	commonHeaders := make(http.Header)
 	commonHeaders.Set("Authorization", "Bearer ABC-123")

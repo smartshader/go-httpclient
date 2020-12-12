@@ -1,34 +1,29 @@
 package gohttp
 
 import (
-	"net"
 	"net/http"
 	"time"
 )
 
 type httpClient struct {
-	client  *http.Client
+	client *http.Client
+
+	maxIdleConnections int
+	responseTimeout    time.Duration
+	connectionTimeout  time.Duration
+
 	Headers http.Header
 }
 
 func New() HttpClient {
-	client := http.Client{
-		Transport: &http.Transport{
-			MaxIdleConnsPerHost:   5,
-			ResponseHeaderTimeout: 5 * time.Second,
-			DialContext: net.Dialer{
-				Timeout: 1 * time.Second,
-			}.DialContext,
-		},
-	}
-
-	return &httpClient{
-		client: &client,
-	}
+	return &httpClient{}
 }
 
 type HttpClient interface {
 	SetHeaders(headers http.Header)
+	SetResponseTimeout(timeout time.Duration)
+	SetConnectionTimeout(timeout time.Duration)
+	SetMaxIdleConnections(max int)
 
 	Get(url string, headers http.Header) (*http.Response, error)
 	Post(url string, headers http.Header, body interface{}) (*http.Response, error)
@@ -39,6 +34,18 @@ type HttpClient interface {
 
 func (c *httpClient) SetHeaders(headers http.Header) {
 	c.Headers = headers
+}
+
+func (c *httpClient) SetResponseTimeout(timeout time.Duration) {
+	c.responseTimeout = timeout
+}
+
+func (c *httpClient) SetConnectionTimeout(timeout time.Duration) {
+	c.connectionTimeout = timeout
+}
+
+func (c *httpClient) SetMaxIdleConnections(max int) {
+	c.maxIdleConnections = max
 }
 
 func (c *httpClient) Get(url string, headers http.Header) (*http.Response, error) {
