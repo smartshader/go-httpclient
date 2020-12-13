@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
-	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
@@ -18,7 +18,7 @@ const (
 	defaultConnectionTimeout  = 1 * time.Second
 )
 
-func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*http.Response, error) {
+func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*Response, error) {
 	fullHeaders := c.getRequestHeaders(headers)
 
 	requestBody, err := c.getRequestBody(fullHeaders.Get("Content-Type"), body)
@@ -35,12 +35,30 @@ func (c *httpClient) do(method, url string, headers http.Header, body interface{
 
 	client := c.getHttpClient()
 
-	return client.Do(request)
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	finalResponse := Response{
+		status:     response.Status,
+		statusCode: response.StatusCode,
+		headers:    response.Header,
+		body:       responseBody,
+	}
+
+	return &finalResponse, nil
 }
 
 func (c *httpClient) getHttpClient() *http.Client {
 	c.clientOnce.Do(func() {
-		fmt.Println("Create http client")
 		c.client = &http.Client{
 			Timeout: c.getConnectionTimeout() + c.getResponseTimeout(),
 			Transport: &http.Transport{

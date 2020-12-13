@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/smartshader/go-httpclient/gohttp"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -24,11 +23,7 @@ func getGithubClient() gohttp.Client {
 }
 
 func main() {
-	for i := 0; i < 1000; i++ {
-		go func() {
-			getUrls()
-		}()
-	}
+	getUrls()
 }
 
 type User struct {
@@ -42,10 +37,9 @@ func getUrls() {
 		panic(err)
 	}
 
-	fmt.Println(response.StatusCode)
-	bytes, _ := ioutil.ReadAll(response.Body)
-
-	fmt.Println(string(bytes))
+	fmt.Println(response.StatusCode())
+	fmt.Println(response.Status())
+	fmt.Println(response.String())
 }
 
 func createUser(user User) {
@@ -54,8 +48,5 @@ func createUser(user User) {
 		panic(err)
 	}
 
-	fmt.Println(response.StatusCode)
-	bytes, _ := ioutil.ReadAll(response.Body)
-
-	fmt.Println(string(bytes))
+	fmt.Println(string(response.Bytes()))
 }
